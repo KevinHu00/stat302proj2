@@ -1,0 +1,20 @@
+---
+title: "Project 2: stat302proj2 Tutorial"
+author: "Bobin Hu"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{stat302proj2 Tutorial}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(stat302proj2)
+```
