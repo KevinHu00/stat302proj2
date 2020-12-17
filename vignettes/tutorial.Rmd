@@ -119,7 +119,7 @@ for (i in 1:10) {
 my_table <- cbind(paste0(c("knn = "), 1:10), my_table)
 # assign column names to the table
 colnames(my_table) <- c("knn", "CV misclassification rate", "training misclassification rate")
-as_tibble(my_table)
+tibble::as_tibble(my_table)
 ```
 
 Based on the training misclassification rate, I would choose the model with knn = 1. 
@@ -168,7 +168,7 @@ sum_table <- rbind(c(mean(k_2), sd(k_2)),
 sum_table <- cbind(paste0("k = ", c(2, 5, 10)), sum_table)
 # assign column names to the table
 colnames(sum_table) <- c("k", "average CV estimate", "sd of the CV estimates")
-as_tibble(sum_table)
+tibble::as_tibble(sum_table)
 ```
 
 The boxplot shows that random forest model with higher number of folds will have lower CV estimated MSE and more concentrated distribution. The tables shows that random forest model with more folds will have lower average CV estimates and lower standard deviation of the cv estimates. This might be the case because as the number of folds incease, we are using more data to test each fold, making our prediction more accurate.
