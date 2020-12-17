@@ -19,7 +19,7 @@
 #' @export
 my_knn_cv <- function(train, cl, k_nn, k_cv) {
   # split data randomly
-  inds <- sample(rep(1:k_cv, length = nrow(train)))
+  inds <- sample(rep(1:k_cv, length = nrow(train)), replace = TRUE)
   # combine training data frame and its true class value by column
   data <- data.frame(cbind(train, cl), "split" = inds)
   # create a vector to store predictions for all observations

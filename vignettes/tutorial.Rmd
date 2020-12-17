@@ -27,7 +27,7 @@ To download the stat302proj2 package, use the code below.
 
 ```{r, eval = FALSE}
 # install.packages("devtools")
-#devtools::install_github("KevinHu00/stat302proj2")
+devtools::install_github("KevinHu00/stat302proj2")
 library(stat302proj2)
 ```
 
@@ -103,6 +103,7 @@ This plot shows that actual values are very different from the fitted values sin
 ## 4. A tutorial for my_knn_cv using my_penguins
 
 ```{r}
+library(tibble)
 # Initilize an empty 10*2 table
 my_table <- cbind(rep(NA, 10), rep(NA, 10))
 # get training data
@@ -131,6 +132,7 @@ the optimal k that minimize misclassification rate.Training error is only specif
 ## 5. A tutorial for my_rf_cv
 
 ```{r}
+library(ggplot2)
 # create a data frame to store CV estimated MSE for each k
 df_cv_MSE <- data.frame(integer(), double())
 for (i in 1:30) {
@@ -150,12 +152,14 @@ ggplot(df_cv_MSE, aes(x = k, y = CV_estimated_MSE, color = k)) +
 ```
 
 ```{r}
+library(tibble)
+library(dplyr)
 # extract CV estimated MSE with k = 2
 k_2 <- filter(df_cv_MSE, k==2)[["CV_estimated_MSE"]]
 # extract CV estimated MSE with k = 5
 k_5 <- filter(df_cv_MSE, k==5)[["CV_estimated_MSE"]]
 # extract CV estimated MSE with k = 10
-k_10 <- filter(df_cv_MSE, k==10)[["CV_estimated_MSE"]]
+k_10 <- filter(df_cv_MSE,k==10)[["CV_estimated_MSE"]]
 # create a summary table for average CV estimates and the standard deviation of CV estimates 
 sum_table <- rbind(c(mean(k_2), sd(k_2)),
                    c(mean(k_5), sd(k_5)),
