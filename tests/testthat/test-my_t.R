@@ -8,5 +8,11 @@ test_that("df correct", {
 test_that("test_stat correct", {
   expect_true(my_t.test(10:80, "two.sided", 45)[[4]] > 0.05)
 })
+test_that("test_stat correct", {
+  expect_error(my_t.test(20:90, "more", 50),
+               "only accept \"two.sided\", \"less\", or \"greater\"
+         for the parameter `alternative`")
+})
+
 
 
