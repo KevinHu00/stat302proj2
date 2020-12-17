@@ -103,7 +103,6 @@ This plot shows that actual values are very different from the fitted values sin
 ## 4. A tutorial for my_knn_cv using my_penguins
 
 ```{r}
-library(tibble)
 # Initilize an empty 10*2 table
 my_table <- cbind(rep(NA, 10), rep(NA, 10))
 # get training data
@@ -115,11 +114,11 @@ for (i in 1:10) {
   my_table[i, 1] = my_knn_cv(train, cl, i, 5)[[2]]
   my_table[i, 2] = mean(as.character(my_knn_cv(train, cl, i, 5)[[1]]) != as.character(cl))
 }
-# assign row names to the table
-my_table <- cbind(paste0(c("knn = "), 1:10), my_table)
 # assign column names to the table
-colnames(my_table) <- c("knn", "CV misclassification rate", "training misclassification rate")
-tibble::as_tibble(my_table)
+colnames(my_table) <- c("    CV misclassification rate", "    training misclassification rate")
+# assign row names to the table
+rownames(my_table) <- paste0("knn = ", c(1:10))
+my_table
 ```
 
 Based on the training misclassification rate, I would choose the model with knn = 1. 
@@ -152,7 +151,6 @@ ggplot(df_cv_MSE, aes(x = k, y = CV_estimated_MSE, color = k)) +
 ```
 
 ```{r}
-library(tibble)
 library(dplyr)
 # extract CV estimated MSE with k = 2
 k_2 <- filter(df_cv_MSE, k==2)[["CV_estimated_MSE"]]
@@ -165,10 +163,10 @@ sum_table <- rbind(c(mean(k_2), sd(k_2)),
                    c(mean(k_5), sd(k_5)),
                    c(mean(k_10), sd(k_10)))
 # assign row names to the table
-sum_table <- cbind(paste0("k = ", c(2, 5, 10)), sum_table)
+rownames(sum_table) <- paste0("k = ", c(2, 5, 10))
 # assign column names to the table
-colnames(sum_table) <- c("k", "average CV estimate", "sd of the CV estimates")
-tibble::as_tibble(sum_table)
+colnames(sum_table) <- c("    average CV estimate", "    sd of the CV estimates")
+sum_table
 ```
 
 The boxplot shows that random forest model with higher number of folds will have lower CV estimated MSE and more concentrated distribution. The tables shows that random forest model with more folds will have lower average CV estimates and lower standard deviation of the cv estimates. This might be the case because as the number of folds incease, we are using more data to test each fold, making our prediction more accurate.
