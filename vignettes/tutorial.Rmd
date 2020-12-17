@@ -35,8 +35,8 @@ library(stat302proj2)
 
 Use the `lifeExp data` from `my_gapminder` to conduct hypothesis testings.
 
-H_0: \mu &= 60,\\
-H_a: \mu &\neq 60.
+$H_0$: mu  = 60
+$H_a$: mu $\neq$ 60
 
 ```{r}
 # conduct a t test
@@ -45,8 +45,8 @@ my_t.test(my_gapminder$lifeExp, "two.sided", 60)
 
 Since the P-value is higher than the 0.05 cutoff, what we observed is less extreme than we allow it to be assuming that null hypothesis is true. Therefore, we fail to reject the null hypothesis.
 
-H_0: \mu &= 60,\\
-H_a: \mu &< 60.
+$H_0$: mu = 60
+$H_a$: mu < 60
 
 ```{r}
 # conduct a t test
@@ -55,8 +55,8 @@ my_t.test(my_gapminder$lifeExp, "less", 60)
 
 Since the P-value is lower than the 0.05 cutoff, what we observed is more extreme than we allow it to be assuming that null hypothesis is true. Therefore, we reject the null hypothesis.
 
-H_0: \mu &= 60,\\
-H_a: \mu &> 60.
+$H_0$: mu = 60
+$H_a$: mu > 60
 
 ```{r}
 # conduct a t test
@@ -78,8 +78,8 @@ lm_lifeExp
 
 The hypothesis test associated with the gdpPercap coefficient:
 
-H_0: `gdpPercap` &= 0,\\
-H_a: `gdpPercap` &\neq 0.
+$H_0$: `gdpPercap` = 0
+$H_a$: `gdpPercap` $\neq$ 0
 
 From the table, the P-value of this hypothesis test is `lm_lifeExp[2, 4]`, which is smaller than the 0.05 cutoff. What we observed is a lot more extreme than we allow it to be assuming that the null hypothesis is true. Therefore, we reject the null hypothesis. This means GDP per capita is correlated with life expectancy.
 
