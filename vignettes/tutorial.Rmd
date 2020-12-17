@@ -18,3 +18,153 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(stat302proj2)
 ```
+
+## 1. Intro & Installation
+
+This is a tutorial for STAT302 project 2. This package contains four methods: `my_t.test`, `my_lm`, `my_knn_cv` and `my_rf_cv`. 
+
+To download the stat302proj2 package, use the code below.
+
+```{r, eval = FALSE}
+# install.packages("devtools")
+#devtools::install_github("KevinHu00/stat302proj2")
+library(stat302proj2)
+```
+
+## 2. A tutorial for my_t.test
+
+Use the `lifeExp data` from `my_gapminder` to conduct hypothesis testings.
+
+H_0: \mu &= 60,\\
+H_a: \mu &\neq 60.
+
+```{r}
+# conduct a t test
+my_t.test(my_gapminder$lifeExp, "two.sided", 60)
+```
+
+Since the P-value is higher than the 0.05 cutoff, what we observed is less extreme than we allow it to be assuming that null hypothesis is true. Therefore, we fail to reject the null hypothesis.
+
+H_0: \mu &= 60,\\
+H_a: \mu &< 60.
+
+```{r}
+# conduct a t test
+my_t.test(my_gapminder$lifeExp, "less", 60)
+```
+
+Since the P-value is lower than the 0.05 cutoff, what we observed is more extreme than we allow it to be assuming that null hypothesis is true. Therefore, we reject the null hypothesis.
+
+H_0: \mu &= 60,\\
+H_a: \mu &> 60.
+
+```{r}
+# conduct a t test
+my_t.test(my_gapminder$lifeExp, "greater", 60)
+```
+
+Since the P-value is higher than the 0.05 cutoff, what we observed is less extreme than we allow it to be assuming that null hypothesis is true. Therefore, we fail to reject the null hypothesis.
+
+## 3. A tutorial for `my_lm`
+
+```{r}
+# Demonstrate a regression using lifeExp as the response variable and
+# gdpPercap and continent as explanatory variables
+lm_lifeExp <- my_lm(lifeExp ~ gdpPercap + continent, my_gapminder)
+lm_lifeExp
+```
+
+`gdpPercap` indicates that holding other independent variables in this model constant, incresing GDP per capita by 1 would cause life expectancy to increase by `lm[2, 1]` on average.
+
+The hypothesis test associated with the gdpPercap coefficient:
+
+H_0: `gdpPercap` &= 0,\\
+H_a: `gdpPercap` &\neq 0.
+
+From the table, the P-value of this hypothesis test is `lm_lifeExp[2, 4]`, which is smaller than the 0.05 cutoff. What we observed is a lot more extreme than we allow it to be assuming that the null hypothesis is true. Therefore, we reject the null hypothesis. This means GDP per capita is correlated with life expectancy.
+
+```{r}
+library(ggplot2)
+# extract fitted values
+mod_fits <- fitted(lm(lifeExp ~ gdpPercap + continent, my_gapminder))
+# make a table with actual values and fitted values
+my_df <- data.frame(actual = my_gapminder$lifeExp, fitted = mod_fits)
+# make an Actual vs. Fitted plot
+ggplot(my_df, aes(x = fitted, y = actual)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0, col = "red", lty = 2) + 
+  theme_bw(base_size = 15) +
+  labs(x = "Fitted values", y = "Actual values", title = "Actual vs. Fitted") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+This plot shows that actual values are very different from the fitted values since points are not on the red line, which has a slope of 1. This means this model has a very weak goodness of fit.
+
+## 4. A tutorial for my_knn_cv using my_penguins
+
+```{r}
+# Initilize an empty 10*2 table
+my_table <- cbind(rep(NA, 10), rep(NA, 10))
+# get training data
+train <- na.omit(my_penguins)[, 3:6]
+# get true class value
+cl <- unlist(na.omit(my_penguins)[, 1])
+# record results into table
+for (i in 1:10) {
+  my_table[i, 1] = my_knn_cv(train, cl, i, 5)[[2]]
+  my_table[i, 2] = mean(as.character(my_knn_cv(train, cl, i, 5)[[1]]) != as.character(cl))
+}
+# assign row names to the table
+my_table <- cbind(paste0(c("knn = "), 1:10), my_table)
+# assign column names to the table
+colnames(my_table) <- c("knn", "CV misclassification rate", "training misclassification rate")
+as_tibble(my_table)
+```
+
+Based on the training misclassification rate, I would choose the model with knn = 1. 
+
+Based on the CV misclassification rate, I would also choose the model with knn = 1.
+
+I will choose model based on CV misclassification rate because cross-validation enables us to choose
+the optimal k that minimize misclassification rate.Training error is only specific to the training data, which is not generalizable. 
+
+## 5. A tutorial for my_rf_cv
+
+```{r}
+# create a data frame to store CV estimated MSE for each k
+df_cv_MSE <- data.frame(integer(), double())
+for (i in 1:30) {
+  df_cv_MSE <- rbind(df_cv_MSE, c(2, my_rf_cv(2))) 
+  df_cv_MSE <- rbind(df_cv_MSE, c(5, my_rf_cv(5)))
+  df_cv_MSE <- rbind(df_cv_MSE, c(10, my_rf_cv(10)))
+}
+# assign column names to the data frame
+colnames(df_cv_MSE) <- c("k", "CV_estimated_MSE")
+# factorize k
+df_cv_MSE$k <- as.factor(df_cv_MSE$k)
+# make a boxplot to show the distribution of CV estimated MSE for each k
+ggplot(df_cv_MSE, aes(x = k, y = CV_estimated_MSE, color = k)) +
+  geom_boxplot(fill='#A4A4A4')+
+  labs(title="Plot of CV estimated MSE by k",x="k(number of folds)", y = "CV estimated MSE") +
+  theme_bw()
+```
+
+```{r}
+# extract CV estimated MSE with k = 2
+k_2 <- filter(df_cv_MSE, k==2)[["CV_estimated_MSE"]]
+# extract CV estimated MSE with k = 5
+k_5 <- filter(df_cv_MSE, k==5)[["CV_estimated_MSE"]]
+# extract CV estimated MSE with k = 10
+k_10 <- filter(df_cv_MSE, k==10)[["CV_estimated_MSE"]]
+# create a summary table for average CV estimates and the standard deviation of CV estimates 
+sum_table <- rbind(c(mean(k_2), sd(k_2)),
+                   c(mean(k_5), sd(k_5)),
+                   c(mean(k_10), sd(k_10)))
+# assign row names to the table
+sum_table <- cbind(paste0("k = ", c(2, 5, 10)), sum_table)
+# assign column names to the table
+colnames(sum_table) <- c("k", "average CV estimate", "sd of the CV estimates")
+as_tibble(sum_table)
+```
+
+The boxplot shows that random forest model with higher number of folds will have lower CV estimated MSE and more concentrated distribution. The tables shows that random forest model with more folds will have lower average CV estimates and lower standard deviation of the cv estimates. This might be the case because as the number of folds incease, we are using more data to test each fold, making our prediction more accurate.
